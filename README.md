@@ -1,4 +1,4 @@
 # dual_difficulty
 
-split screen game
+ split screen game
 
