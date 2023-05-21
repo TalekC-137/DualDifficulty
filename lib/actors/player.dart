@@ -1,5 +1,6 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/experimental.dart';
 
 import '../mainGame.dart';
 import '../helpers/enums.dart';
@@ -7,10 +8,11 @@ import '../helpers/enums.dart';
 class Player extends SpriteAnimationComponent
     with HasGameRef<DualDifficulty>, CollisionCallbacks {
   final Vector2 gridPosition;
+  final CameraComponent cameraComponent;
 
   Player({
-    required this.gridPosition,
-  }) : super(size: Vector2.all(64), anchor: Anchor.center);
+    required this.gridPosition, required this.cameraComponent
+  }) : super(size: Vector2.all(50), anchor: Anchor.center);
 
   final Vector2 velocity = Vector2.zero();
   late Vector2 directionVector = Vector2.zero();
@@ -27,8 +29,8 @@ class Player extends SpriteAnimationComponent
         stepTime: 0.12,
       ),
     );
-    position = Vector2((gridPosition.x * size.x),
-      game.size.y - (gridPosition.y * size.y),
+    position = Vector2((gridPosition.x * 64),
+      game.size.y - (gridPosition.y * 64),
     );
     add(
       RectangleHitbox(),
@@ -36,6 +38,9 @@ class Player extends SpriteAnimationComponent
   }
   @override
   void update(double dt) {
+
+    cameraComponent.viewfinder.position = position;
+
     velocity.x = directionVector.x * moveSpeed;
     velocity.y = directionVector.y * moveSpeed;
     position += velocity * dt;
