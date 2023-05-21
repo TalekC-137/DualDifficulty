@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
@@ -9,15 +11,15 @@ class Player extends SpriteAnimationComponent
     with HasGameRef<DualDifficulty>, CollisionCallbacks {
   final Vector2 gridPosition;
   final CameraComponent cameraComponent;
+  final VoidCallback onPlayerStopped;
 
   Player({
-    required this.gridPosition, required this.cameraComponent
+    required this.gridPosition, required this.cameraComponent, required this.onPlayerStopped
   }) : super(size: Vector2.all(50), anchor: Anchor.center);
 
   final Vector2 velocity = Vector2.zero();
   late Vector2 directionVector = Vector2.zero();
   final double moveSpeed = 500;
-  bool isMoving = false;
 
   @override
   void onLoad() {
@@ -30,7 +32,7 @@ class Player extends SpriteAnimationComponent
       ),
     );
     position = Vector2((gridPosition.x * 64),
-      game.size.y - (gridPosition.y * 64),
+      (gridPosition.y * size.y) * -1 - 14,
     );
     add(
       RectangleHitbox(),
@@ -50,9 +52,9 @@ class Player extends SpriteAnimationComponent
 
  @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    isMoving = false;
-
-    position = position-(directionVector * 10);
+    onPlayerStopped();
+    //sets position to the center of the current block after collision to avoid texture clipping and getting stuck
+    position = Vector2((position.x/64).round() * 64, (position.y/64).round() * 64 );
 
     directionVector = Vector2(0,0);
 
@@ -60,8 +62,6 @@ class Player extends SpriteAnimationComponent
   }
 
   void move(Direction direction) {
-    if(!isMoving) {
-      isMoving = true;
       switch (direction) {
         case Direction.down:
           directionVector = Vector2(0, 1);
@@ -76,6 +76,5 @@ class Player extends SpriteAnimationComponent
           directionVector = Vector2(-1, 0);
           break;
       }
-    }
   }
 }

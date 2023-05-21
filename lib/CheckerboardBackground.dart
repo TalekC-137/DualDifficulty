@@ -17,8 +17,8 @@ class CheckerboardBackground extends Component {
 
   @override
   void render(Canvas canvas) {
-    for (var x = -1000; x < 2000; x += 50) {
-      for (var y = -1000; y < 2000; y += 50) {
+    for (var x = -64*12; x < 2000; x += 50) {
+      for (var y = -64*12; y < 2000; y += 50) {
         final paint = (x ~/ cellSize + y ~/ cellSize) % 2 == 0 ? darkPaint : lightPaint;
         canvas.drawRect(Rect.fromLTWH(x.toDouble(), y.toDouble(), cellSize, cellSize), paint);
       }

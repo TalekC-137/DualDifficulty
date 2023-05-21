@@ -20,6 +20,8 @@ class DualDifficulty extends FlameGame with HorizontalDragDetector, VerticalDrag
   final someVector = Vector2(100, 100);
   Direction? direction;
   late final World cameraWorld;
+  bool playerMoving = false;
+  bool player2Moving = false;
 
   @override
   Future<void> onLoad() async {
@@ -87,13 +89,17 @@ class DualDifficulty extends FlameGame with HorizontalDragDetector, VerticalDrag
     addAll(cameras);
 
     player = Player(
-      gridPosition: Vector2(5,6),
-      cameraComponent: cameras[0]
+      gridPosition: Vector2(3,1),
+      cameraComponent: cameras[0], onPlayerStopped: () {
+            playerMoving = false;
+         }
      );
 
     player2 = Player(
-      gridPosition: Vector2(15,6),
-        cameraComponent: cameras[1]
+      gridPosition: Vector2(11,1),
+        cameraComponent: cameras[1], onPlayerStopped: () {
+           player2Moving = false;
+        }
     );
 
     cameraWorld.add(player);
@@ -105,6 +111,10 @@ class DualDifficulty extends FlameGame with HorizontalDragDetector, VerticalDrag
     for (final block in segments[segmentIndex]) {
       switch (block.blockType) {
         case GroundBlock:
+          cameraWorld.add(GroundBlock(
+            gridPosition: block.gridPosition,
+            xOffset: xPositionOffset,
+          ));
           break;
         case WallBlock:
          cameraWorld.add(WallBlock(
@@ -142,19 +152,23 @@ class DualDifficulty extends FlameGame with HorizontalDragDetector, VerticalDrag
 
   @override
   void onHorizontalDragEnd(DragEndInfo info) {
-    if (direction != null) {
+    if (direction != null && !playerMoving && !player2Moving) {
       player.move(direction!);
       player2.move(direction!);
       direction = null;
+      playerMoving = true;
+      player2Moving = true;
     }
   }
 
   @override
   void onVerticalDragEnd(DragEndInfo info) {
-    if (direction != null) {
+    if (direction != null && !playerMoving && !player2Moving) {
       player.move(direction!);
       player2.move(direction!);
       direction = null;
+      playerMoving = true;
+      player2Moving = true;
     }
   }
 
