@@ -23,7 +23,7 @@ class WallBlock extends SpriteComponent
     final wallImage = game.images.fromCache('crate.png');
     sprite = Sprite(wallImage);
     position = Vector2((gridPosition.x * size.x) + xOffset,
-      game.size.y - (gridPosition.y * size.y),
+      gridPosition.y * size.y,
     );
     add(RectangleHitbox()..collisionType = CollisionType.active);
   }
