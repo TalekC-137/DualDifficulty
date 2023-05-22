@@ -13,6 +13,16 @@ final segments = [
   segment1,
   segment2
 ];
+/// TODO add HIVE database that has this structure to store this format of maps:
+///
+///       x       y     blockType
+///
+///       1       5     WallBlock
+///       2       3     GroundBlock
+///       3       5     WallBlock
+///       4       3     GroundBlock
+///
+/// download that shit from firebase if someone created it with a limit of 2 maps per user
 
 final segment0 = [
   //left wall

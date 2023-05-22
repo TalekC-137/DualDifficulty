@@ -1,10 +1,11 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/game.dart';
 
-import 'mainGame.dart';
+
 
 class GroundBlock extends SpriteComponent
-    with HasGameRef<DualDifficulty> {
+    with HasGameRef<FlameGame> {
   final Vector2 gridPosition;
   double xOffset;
 
@@ -28,7 +29,7 @@ class Star{}
 
 
 class WallBlock extends SpriteComponent
-    with HasGameRef<DualDifficulty> {
+    with HasGameRef<FlameGame> {
   final Vector2 gridPosition;
   double xOffset;
 
