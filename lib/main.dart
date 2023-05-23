@@ -1,12 +1,42 @@
+import 'dart:io';
+
+import 'package:hive/hive.dart';
+
 import 'map_builder.dart';
 import 'package:flame/game.dart';
-import 'package:flutter/widgets.dart';
 import 'mainGame.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
   runApp(const MyApp());
 }
+
+
+@HiveType(typeId: 0)
+class MapData extends HiveObject {
+  @HiveField(0)
+  String mapName;
+
+  @HiveField(1)
+  List<BlockData> blocks;
+
+  MapData(this.mapName, this.blocks);
+}
+
+@HiveType(typeId: 1)
+class BlockData extends HiveObject {
+  @HiveField(0)
+  String xValue;
+
+  @HiveField(1)
+  int yValue;
+
+  @HiveField(2)
+  Type blockType;
+
+  BlockData(this.xValue, this.yValue, this.blockType);
+}
+
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
