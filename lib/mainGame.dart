@@ -4,11 +4,15 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
+import 'package:hive/hive.dart';
 import 'CheckerboardBackground.dart';
 import 'actors/player.dart';
 import '../helpers/enums.dart';
+import 'main.dart';
 import 'managers/segmentManager.dart';
 import 'objects.dart';
+import 'helpers/map_data.dart';
+import 'package:flutter/material.dart';
 
 class DualDifficulty extends FlameGame with HorizontalDragDetector, VerticalDragDetector,
     HasCollisionDetection, TapCallbacks {
@@ -43,13 +47,38 @@ class DualDifficulty extends FlameGame with HorizontalDragDetector, VerticalDrag
 
   }
 
-  void initializeGame() {
-    final segmentsToLoad = (size.x / 640).ceil();
-    segmentsToLoad.clamp(0, segments.length);
+  Future<void> initializeGame() async {
+    var box = await Hive.openBox('Box');
 
-    for (var i = 0; i <= segmentsToLoad; i++) {
-      loadGameSegments(i, (640 * i).toDouble());
+    MapData myData = box.get('testMap');
+
+    for (var block in myData.blocks) {
+
+      Vector2 blockPosition = Vector2(block.gridPositionX, block.gridPositionY);
+
+      switch (block.blockType) {
+        case "GroundBlock":
+          cameraWorld.add(GroundBlock(
+            gridPosition: blockPosition,
+            xOffset: 0,
+          ));
+          break;
+        case "WallBlock":
+          cameraWorld.add(WallBlock(
+            gridPosition: blockPosition,
+            xOffset: 0,
+          ));
+          break;
+        case "Star":
+          break;
+      }
     }
+    box.close();
+
+    addPlayers();
+  }
+
+  void addPlayers(){
     final isHorizontal = canvasSize.x > canvasSize.y;
     Vector2 alignedVector({
       required double longMultiplier,
@@ -64,7 +93,6 @@ class DualDifficulty extends FlameGame with HorizontalDragDetector, VerticalDrag
             : canvasSize.y * shortMultiplier,
       );
     }
-
     final viewportSize = alignedVector(longMultiplier:0.5);
 
     RectangleComponent viewportRimGenerator() =>
@@ -87,19 +115,18 @@ class DualDifficulty extends FlameGame with HorizontalDragDetector, VerticalDrag
     });
 
     addAll(cameras);
-
     player = Player(
-      gridPosition: Vector2(3,1),
-      cameraComponent: cameras[0], onPlayerStopped: () {
-            playerMoving = false;
-         }
-     );
+        gridPosition: Vector2(3,1),
+        cameraComponent: cameras[0], onPlayerStopped: () {
+      playerMoving = false;
+    }
+    );
 
     player2 = Player(
-      gridPosition: Vector2(11,1),
+        gridPosition: Vector2(11,1),
         cameraComponent: cameras[1], onPlayerStopped: () {
-           player2Moving = false;
-        }
+      player2Moving = false;
+    }
     );
 
     cameraWorld.add(player);

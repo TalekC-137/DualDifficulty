@@ -1,42 +1,15 @@
-import 'dart:io';
 
-import 'package:hive/hive.dart';
-
+import 'LoadingScreen.dart';
 import 'map_builder.dart';
 import 'package:flame/game.dart';
 import 'mainGame.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 Future<void> main() async {
+  await Hive.initFlutter();
   runApp(const MyApp());
 }
-
-
-@HiveType(typeId: 0)
-class MapData extends HiveObject {
-  @HiveField(0)
-  String mapName;
-
-  @HiveField(1)
-  List<BlockData> blocks;
-
-  MapData(this.mapName, this.blocks);
-}
-
-@HiveType(typeId: 1)
-class BlockData extends HiveObject {
-  @HiveField(0)
-  String xValue;
-
-  @HiveField(1)
-  int yValue;
-
-  @HiveField(2)
-  Type blockType;
-
-  BlockData(this.xValue, this.yValue, this.blockType);
-}
-
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -47,9 +20,9 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Game App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        accentColor: Colors.green,
+        hintColor: Colors.green,
       ),
-      home: const HomePage(),
+      home: const LoadingScreen(),
     );
   }
 }
