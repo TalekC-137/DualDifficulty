@@ -52,11 +52,13 @@ class _LoadingScreenState extends State<LoadingScreen> {
   Future loadMapData(Box<dynamic> box) async {
     List<BlockData> map1 = [
 
-      //players position
-
-
+      //players and finish positions
       BlockData(3, 1, "PlayerOne"),
+      BlockData(9, 1, "FinishBlock1"),
+
       BlockData(11, 1, "PlayerTwo"),
+      BlockData(19, 1, "FinishBlock2"),
+
       //map size
       BlockData(10, 10, "mapSize"),
 

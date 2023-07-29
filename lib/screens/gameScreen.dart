@@ -28,6 +28,11 @@ class DualDifficulty extends FlameGame with HorizontalDragDetector, VerticalDrag
   late final World cameraWorld;
   bool playerMoving = false;
   bool player2Moving = false;
+  bool playerFinished = false;
+  bool player2Finished = false;
+
+  late Vector2 finish1Position;
+  late Vector2 finish2Position;
 
   @override
   Future<void> onLoad() async {
@@ -82,6 +87,20 @@ class DualDifficulty extends FlameGame with HorizontalDragDetector, VerticalDrag
             gridPosition: blockPosition,
             xOffset: 0,
           ));
+          break;
+        case "FinishBlock1":
+          cameraWorld.add(FinishBlock(
+            gridPosition: blockPosition,
+            xOffset: 0,
+          ));
+          finish1Position = blockPosition;
+          break;
+        case "FinishBlock2":
+          cameraWorld.add(FinishBlock(
+            gridPosition: blockPosition,
+            xOffset: 0,
+          ));
+          finish2Position = blockPosition;
           break;
       }
     }
@@ -150,14 +169,36 @@ class DualDifficulty extends FlameGame with HorizontalDragDetector, VerticalDrag
     player = Player(
         gridPosition: p1,
         cameraComponent: cameras[0], onPlayerStopped: () {
-      playerMoving = false;
+        playerMoving = false;
+
+        Vector2 checkPosition = Vector2((player.position.x / 64).round() as double,
+          ((player.position.y /player.size.y) * -1).round() as double,
+        );
+
+        if(checkPosition == finish1Position){
+          playerFinished = true;
+          hasGameFinished();
+        }else{
+          playerFinished = false;
+        }
     }
     );
 
     player2 = Player(
         gridPosition: p2,
         cameraComponent: cameras[1], onPlayerStopped: () {
-      player2Moving = false;
+        player2Moving = false;
+
+        Vector2 checkPosition = Vector2((player2.position.x / 64).round() as double,
+          ((player2.position.y /player2.size.y) * -1).round() as double,
+        );
+
+        if(checkPosition == finish2Position){
+          player2Finished = true;
+          hasGameFinished();
+        }else{
+          player2Finished = false;
+        }
     }
     );
 
@@ -166,24 +207,12 @@ class DualDifficulty extends FlameGame with HorizontalDragDetector, VerticalDrag
     cameraWorld.add(player2);
   }
 
-  void loadGameSegments(int segmentIndex, double xPositionOffset) {
-    for (final block in segments[segmentIndex]) {
-      switch (block.blockType) {
-        case GroundBlock:
-          cameraWorld.add(GroundBlock(
-            gridPosition: block.gridPosition,
-            xOffset: xPositionOffset,
-          ));
-          break;
-        case WallBlock:
-         cameraWorld.add(WallBlock(
-            gridPosition: block.gridPosition,
-            xOffset: xPositionOffset,
-          ));
-          break;
-        case Star:
-          break;
-      }
+  void hasGameFinished(){
+
+    if(playerFinished && player2Finished){
+
+     print("asdasdasd" + "congrats!!!!");
+
     }
   }
 
