@@ -4,7 +4,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 
-import '../mainGame.dart';
+import '../screens/gameScreen.dart';
 import '../helpers/enums.dart';
 
 class Player extends SpriteAnimationComponent

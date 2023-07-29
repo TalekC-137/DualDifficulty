@@ -1,8 +1,9 @@
 
-import 'LoadingScreen.dart';
+import 'package:dual_difficulty/screens/LevelSelectorScreen.dart';
+
+import 'screens/LoadingScreen.dart';
 import 'map_builder.dart';
 import 'package:flame/game.dart';
-import 'mainGame.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -48,7 +49,7 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const DualDifficultyGamePage(),
+                    builder: (context) => const LevelSelector(),
                   ),
                 );
               },
@@ -71,22 +72,6 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class DualDifficultyGamePage extends StatelessWidget {
-  const DualDifficultyGamePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dual Difficulty Game'),
-      ),
-      body: const GameWidget<DualDifficulty>.controlled(
-        gameFactory: DualDifficulty.new,
       ),
     );
   }

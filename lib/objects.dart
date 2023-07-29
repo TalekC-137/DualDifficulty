@@ -48,3 +48,24 @@ class WallBlock extends SpriteComponent
     add(RectangleHitbox()..collisionType = CollisionType.active);
   }
 }
+
+class FinishBlock extends SpriteComponent
+    with HasGameRef<FlameGame> {
+  final Vector2 gridPosition;
+  double xOffset;
+
+  FinishBlock({
+    required this.gridPosition,
+    required this.xOffset,
+  }) : super(size: Vector2.all(64), anchor: Anchor.center);
+
+  @override
+  void onLoad() {
+    final wallImage = game.images.fromCache('coins.png');
+    sprite = Sprite(wallImage);
+    position = Vector2((gridPosition.x * size.x) + xOffset,
+      (gridPosition.y * size.y) * -1,
+    );
+    add(RectangleHitbox()..collisionType = CollisionType.active);
+  }
+}
