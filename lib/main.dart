@@ -86,8 +86,8 @@ class MapBuilderGamePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Map Builder Game'),
       ),
-      body: const GameWidget<MapBuilder>.controlled(
-        gameFactory: MapBuilder.new,
+      body: const GameWidget<MapEditor>.controlled(
+        gameFactory: MapEditor.new,
       ),
     );
   }

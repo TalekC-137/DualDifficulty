@@ -1,158 +1,57 @@
-import 'dart:ui';
-
-import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
-import 'CheckerboardBackground.dart';
-import 'actors/player.dart';
-import '../helpers/enums.dart';
-import 'managers/segmentManager.dart';
-import 'objects.dart';
+import 'package:flutter/material.dart';
 
-class MapBuilder extends FlameGame with HorizontalDragDetector, VerticalDragDetector,
-    HasCollisionDetection, TapCallbacks {
-  MapBuilder();
+class MapEditor extends FlameGame with TapDetector {
+  final int rows = 12;
+  final int cols = 12;
+  final double squareSize = 64;
+  final double outlineThickness = 2.0; // thickness of the outline
+  late List<List<bool>> squareStates; // true if red, false if blue
 
-  late Player player;
-  late Player player2;
-  late CheckerboardBackground background;
-  final someVector = Vector2(100, 100);
-  Direction? direction;
-  late final World cameraWorld;
-  bool playerMoving = false;
-  bool player2Moving = false;
+  MapEditor() {
+    squareStates = List.generate(rows, (y) => List.generate(cols, (x) => false));
+  }
 
   @override
-  Future<void> onLoad() async {
-    await images.loadAll([
-      'crate.png',
-      'ember.png',
-      'plank.png',
-      '1.png',
-      '2.png',
-      'coins.png',
-      'spikes.png',
-    ]);
-    cameraWorld = World();
-    add(cameraWorld);
+  void render(Canvas canvas) {
+    super.render(canvas);
+    final Paint fillPaint = Paint();
+    final Paint outlinePaint = Paint()..color = Colors.white;
 
-    background = CheckerboardBackground();
-    cameraWorld.add(background);
-    initializeGame();
+    for (int y = 0; y < rows; y++) {
+      for (int x = 0; x < cols; x++) {
+        fillPaint.color = squareStates[y][x] ? Colors.red : Colors.blue;
+        final Rect rect = Rect.fromPoints(
+          Offset(x * squareSize, y * squareSize),
+          Offset((x + 1) * squareSize, (y + 1) * squareSize),
+        );
+        canvas.drawRect(rect, fillPaint);
 
-  }
-
-  void initializeGame() {
-    final segmentsToLoad = (size.x / 640).ceil();
-    segmentsToLoad.clamp(0, segments.length);
-
-    for (var i = 0; i <= segmentsToLoad; i++) {
-      loadGameSegments(i, (640 * i).toDouble());
-    }
-    final isHorizontal = canvasSize.x > canvasSize.y;
-    Vector2 alignedVector({
-      required double longMultiplier,
-      double shortMultiplier = 1.0,
-    }) {
-      return Vector2(
-        isHorizontal
-            ? canvasSize.x * longMultiplier
-            : canvasSize.x * shortMultiplier,
-        !isHorizontal
-            ? canvasSize.y * longMultiplier
-            : canvasSize.y * shortMultiplier,
-      );
-    }
-
-    final viewportSize = alignedVector(longMultiplier:0.5);
-
-    RectangleComponent viewportRimGenerator() =>
-        RectangleComponent(size: viewportSize, anchor: Anchor.topLeft)
-          ..paint.strokeWidth = 5.0
-          ..paint.style = PaintingStyle.stroke;
-
-    final cameras = List.generate(2, (i) {
-      return CameraComponent(
-        world: cameraWorld,
-        viewport: FixedSizeViewport(viewportSize.x, viewportSize.y)
-          ..position = alignedVector(
-            longMultiplier: i == 0 ? 0.0 : 1 / (2),
-            shortMultiplier: 0.0,
-          )
-          ..add(viewportRimGenerator()),
-      )
-        ..viewfinder.anchor = Anchor.center
-        ..viewfinder.zoom = 1.0;
-    });
-
-    addAll(cameras);
-
-  }
-
-  void loadGameSegments(int segmentIndex, double xPositionOffset) {
-    for (final block in segments[segmentIndex]) {
-      switch (block.blockType) {
-        case GroundBlock:
-          cameraWorld.add(GroundBlock(
-            gridPosition: block.gridPosition,
-            xOffset: xPositionOffset,
-          ));
-          break;
-        case WallBlock:
-          cameraWorld.add(WallBlock(
-            gridPosition: block.gridPosition,
-            xOffset: xPositionOffset,
-          ));
-          break;
-        case Star:
-          break;
+        final Rect outlineRect = Rect.fromPoints(
+          Offset(x * squareSize + outlineThickness, y * squareSize + outlineThickness),
+          Offset((x + 1) * squareSize - outlineThickness, (y + 1) * squareSize - outlineThickness),
+        );
+        canvas.drawRect(outlineRect, outlinePaint);
       }
     }
   }
 
   @override
-  void onHorizontalDragUpdate(DragUpdateInfo info) {
-    if (direction == null) {
-      if (info.delta.game.x > 0) {
-        direction = Direction.right;
-      } else if (info.delta.game.x < 0) {
-        direction = Direction.left;
-      }
+  void onTapDown(TapDownInfo details) {
+    final Vector2 touchPosition = details.eventPosition.game;
+    final int x = (touchPosition.x / squareSize).floor();
+    final int y = (touchPosition.y / squareSize).floor();
+
+    if (x >= 0 && x < cols && y >= 0 && y < rows) {
+
+      squareStates[y][x] = !squareStates[y][x];
+      print('Square coordinates: ($x, $y)');
     }
   }
 
   @override
-  void onVerticalDragUpdate(DragUpdateInfo info) {
-    if (direction == null) {
-      if (info.delta.game.y > 0) {
-        direction = Direction.down;
-      } else if (info.delta.game.y < 0) {
-        direction = Direction.up;
-      }
-    }
+  void update(double t) {
+    super.update(t);
   }
-
-  @override
-  void onHorizontalDragEnd(DragEndInfo info) {
-    if (direction != null && !playerMoving && !player2Moving) {
-      player.move(direction!);
-      player2.move(direction!);
-      direction = null;
-      playerMoving = true;
-      player2Moving = true;
-    }
-  }
-
-  @override
-  void onVerticalDragEnd(DragEndInfo info) {
-    if (direction != null && !playerMoving && !player2Moving) {
-      player.move(direction!);
-      player2.move(direction!);
-      direction = null;
-      playerMoving = true;
-      player2Moving = true;
-    }
-  }
-
 }
