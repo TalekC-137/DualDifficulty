@@ -11,7 +11,7 @@ class MapEditor extends FlameGame with TapDetector {
   final int cols = 8;
   final double squareSize = 64;
   final double outlineThickness = 2.0;
-  late List<List<bool>> squareStates;
+  late List<List<Color?>> squareStates; // Change this to store Colors instead of bool
   double scale = 1.0;
   final double zoomFactor = 0.2;
   double offsetX = 0.0;
@@ -19,8 +19,9 @@ class MapEditor extends FlameGame with TapDetector {
   final double moveFactor = 32.0;
   Color pickedColor = Colors.red;
 
+
   MapEditor() {
-    squareStates = List.generate(rows, (y) => List.generate(cols, (x) => false));
+    squareStates = List.generate(rows, (y) => List.generate(cols, (x) => null));
     add(CheckerboardBackground());
   }
 
@@ -61,7 +62,7 @@ class MapEditor extends FlameGame with TapDetector {
   @override
   void render(Canvas canvas) {
     canvas.save();
-    canvas.translate(offsetX, offsetY); // Moved above scale
+    canvas.translate(offsetX, offsetY);
     canvas.scale(scale);
     super.render(canvas);
 
@@ -70,7 +71,7 @@ class MapEditor extends FlameGame with TapDetector {
 
     for (int y = 0; y < rows; y++) {
       for (int x = 0; x < cols; x++) {
-        fillPaint.color = squareStates[y][x] ? pickedColor : Colors.blue;
+        fillPaint.color = squareStates[y][x] ?? Colors.blue;
         final Rect rect = Rect.fromPoints(
           Offset(x * squareSize, y * squareSize),
           Offset((x + 1) * squareSize, (y + 1) * squareSize),
@@ -95,7 +96,7 @@ class MapEditor extends FlameGame with TapDetector {
     final int y = ((touchPosition.y - offsetY) / (scale * squareSize)).floor();
 
     if (x >= 0 && x < cols && y >= 0 && y < rows) {
-      squareStates[y][x] = !squareStates[y][x];
+      squareStates[y][x] = squareStates[y][x] == null ? pickedColor : null;
       print('Square coordinates: ($x, $y)');
     }
   }
