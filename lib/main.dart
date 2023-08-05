@@ -87,28 +87,88 @@ class MapEditorWidget extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Map Editor'),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         actions: [
-          Padding(
-            // Add padding to position the buttons
-            padding: EdgeInsets.only(right: MediaQuery.of(context).size.width / 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.zoom_in),
-                  onPressed: game.zoomIn,
-                ),
-                IconButton(
-                  icon: Icon(Icons.zoom_out),
-                  onPressed: game.zoomOut,
-                ),
-              ],
+          Expanded(
+            child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_upward),
+                    onPressed: game.moveUp,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.arrow_left),
+                    onPressed: game.moveLeft,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.arrow_downward),
+                    onPressed: game.moveDown,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.arrow_right),
+                    onPressed: game.moveRight,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.zoom_in),
+                    onPressed: game.zoomIn,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.zoom_out),
+                    onPressed: game.zoomOut,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              child: Text('Menu'),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+            ),
+            ListTile(
+              title: Text('red'),
+              onTap: () {
+                game.changeColor(Colors.red);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('green'),
+              onTap: () {
+                game.changeColor(Colors.green);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('purple'),
+              onTap: () {
+                game.changeColor(Colors.purple);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
       body: GameWidget(game: game),
     );
   }
 }
+
+
+
 
