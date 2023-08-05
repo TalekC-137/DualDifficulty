@@ -64,7 +64,7 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const MapBuilderGamePage(),
+                    builder: (context) => MapEditorWidget(),
                   ),
                 );
               },
@@ -77,18 +77,37 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class MapBuilderGamePage extends StatelessWidget {
-  const MapBuilderGamePage({Key? key}) : super(key: key);
+class MapEditorWidget extends StatelessWidget {
+  final game = MapEditor();
+
+  MapEditorWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Map Builder Game'),
+        title: Text('Map Editor'),
+        actions: [
+          Padding(
+            // Add padding to position the buttons
+            padding: EdgeInsets.only(right: MediaQuery.of(context).size.width / 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.zoom_in),
+                  onPressed: game.zoomIn,
+                ),
+                IconButton(
+                  icon: Icon(Icons.zoom_out),
+                  onPressed: game.zoomOut,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-      body: const GameWidget<MapEditor>.controlled(
-        gameFactory: MapEditor.new,
-      ),
+      body: GameWidget(game: game),
     );
   }
 }
